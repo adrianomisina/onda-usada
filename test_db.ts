@@ -10,7 +10,7 @@ if (!process.env.MONGODB_URI) {
 
 const testConn = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI!);
     console.log('Success! Connected to MongoDB Atlas');
     await mongoose.disconnect();
     process.exit(0);

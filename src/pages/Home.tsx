@@ -151,14 +151,14 @@ export default function Home() {
             <div className="sm:w-48 flex items-center px-4 bg-zinc-800/50 rounded-xl border-t sm:border-t-0 sm:border-l border-zinc-800">
               <Filter className="text-zinc-400 mr-2 shrink-0" size={20} />
               <select 
-                className="w-full bg-transparent border-none focus:ring-0 py-3 text-zinc-100 outline-none cursor-pointer"
+                className="w-full bg-zinc-800 border-none focus:ring-0 py-3 text-zinc-100 outline-none cursor-pointer rounded-lg"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="">Todas Categorias</option>
-                <option value="Pranchas">Pranchas</option>
-                <option value="Equipamentos">Equipamentos</option>
-                <option value="Acessórios">Acessórios</option>
+                <option value="" className="bg-zinc-900 text-zinc-100">Todas Categorias</option>
+                <option value="Pranchas" className="bg-zinc-900 text-zinc-100">Pranchas</option>
+                <option value="Equipamentos" className="bg-zinc-900 text-zinc-100">Equipamentos</option>
+                <option value="Acessórios" className="bg-zinc-900 text-zinc-100">Acessórios</option>
               </select>
             </div>
             <button 

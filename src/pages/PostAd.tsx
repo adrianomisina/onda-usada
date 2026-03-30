@@ -1,13 +1,18 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useRef, useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, Upload, ChevronRight, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&q=80&w=800";
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
 export default function PostAd() {
   const navigate = useNavigate();
   const { user, openAuthModal } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -17,7 +22,7 @@ export default function PostAd() {
     location: "",
     sellerName: "",
     sellerPhone: "",
-    images: ["https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&q=80&w=800"], // Default image for prototype
+    images: [DEFAULT_IMAGE],
     plan: "basic"
   });
 
@@ -27,6 +32,46 @@ export default function PostAd() {
 
   const handlePlanSelect = (plan: string) => {
     setFormData({ ...formData, plan });
+  };
+
+  const readFileAsDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+      reader.onerror = () => reject(new Error(`Erro ao ler o arquivo ${file.name}`));
+      reader.readAsDataURL(file);
+    });
+
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+
+    if (!files.length) {
+      return;
+    }
+
+    const oversizedFile = files.find((file) => file.size > MAX_FILE_SIZE);
+    if (oversizedFile) {
+      setImageError(`A imagem "${oversizedFile.name}" excede o limite de 5MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    try {
+      const imageUrls = await Promise.all(files.map(readFileAsDataUrl));
+      const validImages = imageUrls.filter(Boolean);
+
+      if (!validImages.length) {
+        throw new Error("Nenhuma imagem válida foi carregada.");
+      }
+
+      setFormData((current) => ({ ...current, images: validImages }));
+      setImageError("");
+    } catch (err) {
+      console.error("Failed to read images", err);
+      setImageError("Não foi possível carregar as imagens selecionadas.");
+    } finally {
+      e.target.value = "";
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -253,11 +298,40 @@ export default function PostAd() {
 
                 <div>
                   <label className="block text-sm font-bold text-zinc-300 mb-2 uppercase tracking-wider">Fotos</label>
-                  <div className="border-2 border-dashed border-zinc-700 bg-zinc-800/50 rounded-2xl p-8 text-center hover:bg-zinc-800 transition-colors cursor-pointer">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    multiple
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-zinc-700 bg-zinc-800/50 rounded-2xl p-8 text-center hover:bg-zinc-800 transition-colors cursor-pointer"
+                  >
                     <Upload className="mx-auto text-zinc-500 mb-3" size={32} />
                     <p className="text-zinc-300 font-bold">Clique para fazer upload de fotos</p>
                     <p className="text-zinc-500 text-sm mt-1">JPG, PNG até 5MB</p>
-                    <p className="text-xs text-red-500 mt-4 font-bold">*Para este protótipo, uma imagem padrão será usada.</p>
+                    <p className="text-xs text-zinc-500 mt-4 font-bold">Você pode selecionar uma ou mais imagens.</p>
+                  </button>
+                  {imageError && (
+                    <p className="text-sm text-red-500 mt-3 font-bold">{imageError}</p>
+                  )}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+                    {formData.images.map((image, index) => (
+                      <div key={`${image}-${index}`} className="relative overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-800">
+                        <img
+                          src={image}
+                          alt={`Prévia da foto ${index + 1}`}
+                          className="h-32 w-full object-cover"
+                        />
+                        <div className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 bg-zinc-900/90">
+                          {image === DEFAULT_IMAGE ? "Imagem padrão" : `Foto ${index + 1}`}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
