@@ -9,8 +9,8 @@ export default function PaymentSuccess() {
   const plan = searchParams.get('plan');
 
   useEffect(() => {
-    // In a real app, you would verify the payment status with Mercado Pago here
-    // and update the ad status or user subscription in the database.
+    // In a real app, you would verify the Mercado Pago payment here
+    // and then confirm the ad highlight in the database.
   }, [adId, type, plan]);
 
   return (
@@ -21,13 +21,13 @@ export default function PaymentSuccess() {
         </div>
         
         <h1 className="text-4xl font-black text-zinc-100 uppercase tracking-tighter mb-4">
-          Pagamento Confirmado!
+          Anúncio Confirmado!
         </h1>
         
         <p className="text-xl text-zinc-400 mb-10 max-w-md mx-auto">
           {type === 'plan' || plan 
-            ? "Seu anúncio foi publicado com o destaque selecionado e já está visível para a comunidade."
-            : "Sua compra foi processada com sucesso. O vendedor será notificado para organizar a entrega."
+            ? "Seu anúncio foi publicado com o destaque selecionado e os interessados já podem falar direto com você."
+            : "Seu anúncio foi publicado com sucesso e os interessados já podem falar direto com você."
           }
         </p>
 

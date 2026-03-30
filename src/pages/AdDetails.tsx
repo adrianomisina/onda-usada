@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Phone, User, Calendar, Tag, ChevronLeft, ShoppingCart } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
+import { MapPin, Phone, User, Calendar, ChevronLeft, Eye } from "lucide-react";
 
 export default function AdDetails() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [ad, setAd] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     fetch(`/api/ads/${id}`)
@@ -116,38 +116,45 @@ export default function AdDetails() {
               <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">
                 Informações do Vendedor
               </h3>
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-zinc-700 rounded-full flex items-center justify-center text-zinc-400 mr-4">
-                    <User size={24} />
-                  </div>
-                  <div>
-                    <div className="font-bold text-zinc-100 text-lg">{ad.sellerName}</div>
-                    <div className="text-zinc-500 text-sm">Vendedor verificado</div>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  <a 
-                    href={`https://wa.me/55${ad.sellerPhone.replace(/\D/g, '')}?text=Olá! Vi seu anúncio "${ad.title}" no OndaUsada e tenho interesse.`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wider transition-colors shadow-sm shadow-green-600/20"
-                  >
-                    <Phone size={20} />
-                    WhatsApp
-                  </a>
-                  
-                  {(isPremium || isPro) && (
+              <div className="flex flex-col gap-4">
+                {showContact ? (
+                  <>
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-zinc-700 rounded-full flex items-center justify-center text-zinc-400 mr-4">
+                        <User size={24} />
+                      </div>
+                      <div>
+                        <div className="font-bold text-zinc-100 text-lg">{ad.sellerName}</div>
+                        <div className="text-zinc-500 text-sm">{ad.sellerPhone}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                      <a
+                        href={`https://wa.me/55${ad.sellerPhone.replace(/\D/g, '')}?text=Olá! Vi seu anúncio "${ad.title}" no OndaUsada e tenho interesse.`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wider transition-colors shadow-sm shadow-green-600/20"
+                      >
+                        <Phone size={20} />
+                        Chamar no WhatsApp
+                      </a>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-zinc-400 leading-relaxed">
+                      Clique para visualizar o contato do anunciante e combinar a compra diretamente com ele.
+                    </p>
                     <button
-                      onClick={() => navigate(`/checkout/${ad._id}`)}
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wider transition-colors shadow-sm shadow-emerald-600/20"
+                      onClick={() => setShowContact(true)}
+                      className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wider transition-colors shadow-sm shadow-emerald-600/20 w-full sm:w-auto"
                     >
-                      <ShoppingCart size={20} />
-                      Comprar
+                      <Eye size={20} />
+                      Ver Contato
                     </button>
-                  )}
-                </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

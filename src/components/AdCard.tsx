@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MapPin, Tag, Heart, ShoppingCart } from "lucide-react";
+import { MapPin, Tag, Heart, Phone } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 interface AdCardProps {
@@ -34,10 +34,10 @@ export default function AdCard({ ad }: AdCardProps) {
     await toggleFavorite(ad._id);
   };
 
-  const handleBuyClick = (e: React.MouseEvent) => {
+  const handleContactClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/checkout/${ad._id}`);
+    navigate(`/ad/${ad._id}`);
   };
 
   return (
@@ -102,11 +102,11 @@ export default function AdCard({ ad }: AdCardProps) {
 
           {(isPremium || isPro) && (
             <button
-              onClick={handleBuyClick}
+              onClick={handleContactClick}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm uppercase tracking-wider"
             >
-              <ShoppingCart size={18} />
-              Comprar
+              <Phone size={18} />
+              Ver Contato
             </button>
           )}
         </div>

@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const SALT_ROUNDS = 12;
+const isProduction = process.env.NODE_ENV === "production";
 
 // Models
 const adSchema = new mongoose.Schema({
@@ -57,8 +58,7 @@ const passwordResetTokenSchema = new mongoose.Schema({
 
 const PasswordResetToken = mongoose.models.PasswordResetToken || mongoose.model("PasswordResetToken", passwordResetTokenSchema);
 
-// In-memory fallback if MongoDB is not connected
-let inMemoryAds: any[] = [
+const developmentSeedAds: any[] = [
   {
     _id: "1",
     title: "Prancha Al Merrick 5'10",
@@ -103,6 +103,9 @@ let inMemoryAds: any[] = [
     sellerPhone: "13977777777"
   }
 ];
+
+// In-memory fallback if MongoDB is not connected
+let inMemoryAds: any[] = isProduction ? [] : [...developmentSeedAds];
 
 let inMemorySubscriptions: any[] = [];
 let sseClients: { email: string, res: express.Response }[] = [];
@@ -541,34 +544,20 @@ async function startServer() {
   // Mercado Pago Checkout
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { plan, adId, type = 'plan' } = req.body;
+      const { plan, adId } = req.body;
       const appUrl = (process.env.APP_URL || `${req.protocol}://${req.get("host")}`).replace(/\/+$/, "");
       const hasPublicAppUrl = Boolean(appUrl) && !/localhost|127\.0\.0\.1/.test(appUrl);
       
-      let title = "";
-      let amount = 0;
+      const prices = {
+        basic: 0,
+        pro: 29.90,
+        premium: 59.90
+      };
+      const amount = prices[plan as keyof typeof prices];
+      const title = `Plano ${String(plan).toUpperCase()} - OndaUsada`;
 
-      if (type === 'plan') {
-        const prices = {
-          basic: 0,
-          pro: 29.90,
-          premium: 59.90
-        };
-        amount = prices[plan as keyof typeof prices];
-        title = `Plano ${plan.toUpperCase()} - OndaUsada`;
-      } else {
-        // Product purchase
-        let ad;
-        if (isMongoConnected) {
-          ad = await (Ad as any).findById(adId);
-        } else {
-          ad = inMemoryAds.find(a => a._id === adId);
-        }
-        
-        if (!ad) return res.status(404).json({ error: "Anúncio não encontrado" });
-        
-        amount = ad.price;
-        title = ad.title;
+      if (amount === undefined) {
+        return res.status(400).json({ error: "Plano inválido" });
       }
 
       if (amount === 0) {
@@ -585,9 +574,6 @@ async function startServer() {
         });
       }
 
-      // Calculate 10% marketplace fee for product sales
-      const marketplaceFee = type === 'product' ? amount * 0.1 : 0;
-
       const preferenceBody: any = {
         items: [
           {
@@ -597,13 +583,12 @@ async function startServer() {
             unit_price: amount,
             currency_id: 'BRL'
           }
-        ],
-        marketplace_fee: marketplaceFee, // This is where the 10% cut goes to the platform owner
+        ]
       };
 
       if (hasPublicAppUrl) {
         preferenceBody.back_urls = {
-          success: `${appUrl}/payment-success?adId=${adId}&type=${type}`,
+          success: `${appUrl}/payment-success?adId=${adId}&type=plan`,
           failure: `${appUrl}/`,
           pending: `${appUrl}/`
         };

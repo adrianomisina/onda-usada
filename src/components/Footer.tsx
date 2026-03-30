@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <Logo className="h-6 mb-4" />
             <p className="text-sm">
-              A maior plataforma de pranchas e equipamentos de surf usados de todo o Brasil.
+              Anuncie pranchas e equipamentos de surf usados e negocie direto entre comprador e anunciante.
             </p>
           </div>
           <div>

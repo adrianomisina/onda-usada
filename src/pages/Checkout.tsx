@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, CreditCard, ShieldCheck } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { MessageCircle, Phone, ShieldCheck, User } from 'lucide-react';
 
 export default function Checkout() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [ad, setAd] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     fetch(`/api/ads/${id}`)
@@ -15,38 +12,6 @@ export default function Checkout() {
       .then(data => setAd(data))
       .catch(err => console.error(err));
   }, [id]);
-
-  const handlePayment = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adId: id, type: 'product' }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao gerar link de pagamento");
-      }
-
-      const data = await response.json();
-      
-      if (data.checkoutUrl) {
-        if (data.checkoutUrl.startsWith('http')) {
-          window.location.href = data.checkoutUrl;
-        } else {
-          navigate(data.checkoutUrl);
-        }
-      } else {
-        throw new Error("Erro ao gerar link de pagamento");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao processar pagamento. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (!ad) {
     return (
@@ -56,22 +21,11 @@ export default function Checkout() {
     );
   }
 
-  if (success) {
-    return (
-      <div className="max-w-md mx-auto mt-20 p-8 bg-zinc-900 rounded-2xl border border-zinc-800 text-center">
-        <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-6" />
-        <h2 className="text-2xl font-bold text-zinc-100 mb-2">Pagamento Aprovado!</h2>
-        <p className="text-zinc-400 mb-6">Sua compra do item "{ad.title}" foi confirmada com sucesso.</p>
-        <p className="text-sm text-zinc-500">Redirecionando para a página inicial...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-md mx-auto mt-12 p-6 sm:p-8 bg-zinc-900 rounded-2xl border border-zinc-800 shadow-xl">
       <div className="flex items-center justify-center gap-3 mb-8">
         <ShieldCheck className="text-emerald-500" size={28} />
-        <h2 className="text-2xl font-bold text-zinc-100">Pagamento Seguro</h2>
+        <h2 className="text-2xl font-bold text-zinc-100">Contato do Anunciante</h2>
       </div>
       
       <div className="bg-zinc-950 rounded-xl p-6 mb-8 border border-zinc-800/50">
@@ -83,50 +37,40 @@ export default function Checkout() {
           </div>
         </div>
 
-        <div className="space-y-3 pt-4 border-t border-zinc-800">
-          <div className="flex justify-between text-zinc-400">
-            <span>Preço do Item</span>
-            <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ad.price)}</span>
+        <div className="space-y-4 pt-4 border-t border-zinc-800">
+          <div className="flex items-center gap-3 text-zinc-300">
+            <User size={18} className="text-zinc-500" />
+            <span>{ad.sellerName}</span>
           </div>
-          <div className="flex justify-between text-zinc-400">
-            <span>Proteção OndaUsada</span>
-            <span className="text-emerald-500">Grátis</span>
-          </div>
-          <div className="flex justify-between text-xl font-black text-zinc-100 pt-3 border-t border-zinc-800">
-            <span>Total</span>
-            <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ad.price)}</span>
+          <div className="flex items-center gap-3 text-zinc-300">
+            <Phone size={18} className="text-zinc-500" />
+            <span>{ad.sellerPhone}</span>
           </div>
         </div>
       </div>
 
       <div className="space-y-4 mb-8">
         <p className="text-zinc-400 text-sm text-center">
-          Você será redirecionado para o ambiente seguro do Mercado Pago para finalizar sua compra.
+          A negociação e a forma de pagamento são combinadas diretamente com o anunciante.
         </p>
       </div>
 
-      <button
-        onClick={handlePayment}
-        disabled={loading}
-        className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 text-lg shadow-lg shadow-emerald-600/20"
+      <a
+        href={`https://wa.me/55${ad.sellerPhone.replace(/\D/g, '')}?text=Olá! Vi seu anúncio "${ad.title}" no OndaUsada e tenho interesse.`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 text-lg shadow-lg shadow-green-600/20"
       >
-        {loading ? (
-          <>
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            Processando...
-          </>
-        ) : (
-          <>
-            <CreditCard size={20} />
-            Pagar com Mercado Pago
-          </>
-        )}
-      </button>
+        <MessageCircle size={20} />
+        Falar no WhatsApp
+      </a>
 
-      <div className="mt-6 flex items-center justify-center gap-2 text-zinc-500 text-xs uppercase tracking-widest font-bold">
-        <ShieldCheck size={14} />
-        Pagamento 100% Seguro
-      </div>
+      <Link
+        to={`/ad/${ad._id}`}
+        className="mt-4 block text-center text-zinc-400 hover:text-zinc-200 text-sm transition-colors"
+      >
+        Voltar ao anúncio
+      </Link>
     </div>
   );
 }

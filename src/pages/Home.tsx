@@ -118,7 +118,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto mb-10"
           >
-            A maior plataforma de compra e venda de pranchas e equipamentos de surf de todo o Brasil.
+            Encontre equipamentos usados e fale direto com o anunciante. No OndaUsada, você paga apenas para destacar seu anúncio.
           </motion.p>
           
           {/* Search Bar */}
@@ -208,7 +208,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold text-zinc-100 mb-2">Nenhum anúncio encontrado</h3>
             <p className="text-zinc-400 max-w-md mx-auto">
-              Não encontramos nenhum anúncio com os filtros atuais. Tente buscar por outros termos ou categorias.
+              Não encontramos anúncios com os filtros atuais. Tente outros termos, categorias ou localização.
             </p>
             <button 
               onClick={() => { setSearchTerm(""); setCategory(""); setLocation(""); }}

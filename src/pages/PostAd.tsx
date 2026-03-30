@@ -97,7 +97,7 @@ export default function PostAd() {
       id: "basic",
       name: "Básico",
       price: "Grátis",
-      features: ["Anúncio ativo por 30 dias", "Até 3 fotos", "Busca padrão", "10% de taxa sobre a venda"],
+      features: ["Anúncio ativo por 30 dias", "Até 3 fotos", "Busca padrão"],
       color: "border-zinc-800 hover:border-red-500",
       bg: "bg-zinc-900",
       badge: null
@@ -106,7 +106,7 @@ export default function PostAd() {
       id: "pro",
       name: "Pro",
       price: "R$ 29,90",
-      features: ["Anúncio ativo por 60 dias", "Até 10 fotos", "Destaque nas buscas", "Selo Pro", "10% de taxa sobre a venda"],
+      features: ["Anúncio ativo por 60 dias", "Até 10 fotos", "Destaque nas buscas", "Selo Pro"],
       color: "border-red-600 ring-1 ring-red-600",
       bg: "bg-red-950/20",
       badge: "Mais Popular"
@@ -115,7 +115,7 @@ export default function PostAd() {
       id: "premium",
       name: "Premium",
       price: "R$ 59,90",
-      features: ["Anúncio ativo até vender", "Fotos ilimitadas", "Topo da página inicial", "Selo Premium", "Suporte prioritário", "10% de taxa sobre a venda"],
+      features: ["Anúncio ativo por tempo indeterminado", "Fotos ilimitadas", "Topo da página inicial", "Selo Premium", "Suporte prioritário"],
       color: "border-amber-500 ring-2 ring-amber-500",
       bg: "bg-amber-950/20",
       badge: "Máxima Visibilidade"
@@ -326,7 +326,7 @@ export default function PostAd() {
                 <div>
                   <h4 className="font-bold text-zinc-100 uppercase tracking-wider">Pagamento Seguro via Mercado Pago</h4>
                   <p className="text-sm text-zinc-400 mt-1">
-                    Ao prosseguir, você será redirecionado para o ambiente seguro do Mercado Pago para finalizar a compra do seu plano de destaque.
+                    Ao prosseguir, você será redirecionado para o Mercado Pago para pagar apenas pelo destaque do anúncio selecionado.
                   </p>
                 </div>
               </div>

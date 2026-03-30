@@ -90,7 +90,7 @@ export default function AuthModal() {
             <p className="text-zinc-400 text-center mb-6">
               {isForgotPassword 
                 ? 'Informe seu e-mail para receber o link de recuperação.' 
-                : isLogin ? 'Acesse sua conta para continuar.' : 'Crie sua conta para anunciar e criar alertas.'}
+                : isLogin ? 'Acesse sua conta para continuar.' : 'Crie sua conta para anunciar, destacar seus produtos e criar alertas.'}
             </p>
 
             {error && (
