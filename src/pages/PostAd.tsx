@@ -1,6 +1,6 @@
 import React, { useRef, useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Upload, ChevronRight, ShieldCheck } from "lucide-react";
+import { Check, Upload, ChevronRight, ShieldCheck, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&q=80&w=800";
@@ -72,6 +72,18 @@ export default function PostAd() {
     } finally {
       e.target.value = "";
     }
+  };
+
+  const handleRemoveImage = (imageIndex: number) => {
+    setFormData((current) => {
+      const nextImages = current.images.filter((_, index) => index !== imageIndex);
+
+      return {
+        ...current,
+        images: nextImages.length ? nextImages : [DEFAULT_IMAGE],
+      };
+    });
+    setImageError("");
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -322,6 +334,14 @@ export default function PostAd() {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
                     {formData.images.map((image, index) => (
                       <div key={`${image}-${index}`} className="relative overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-800">
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-950/80 text-zinc-100 transition-colors hover:bg-red-600"
+                          aria-label={`Excluir foto ${index + 1}`}
+                        >
+                          <X size={16} />
+                        </button>
                         <img
                           src={image}
                           alt={`Prévia da foto ${index + 1}`}
