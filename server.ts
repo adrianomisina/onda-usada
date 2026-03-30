@@ -542,7 +542,7 @@ async function startServer() {
   app.post("/api/checkout", async (req, res) => {
     try {
       const { plan, adId, type = 'plan' } = req.body;
-      const appUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      const appUrl = (process.env.APP_URL || `${req.protocol}://${req.get("host")}`).replace(/\/+$/, "");
       const hasPublicAppUrl = Boolean(appUrl) && !/localhost|127\.0\.0\.1/.test(appUrl);
       
       let title = "";
